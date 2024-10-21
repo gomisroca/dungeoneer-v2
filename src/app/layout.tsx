@@ -8,6 +8,7 @@ import { Analytics } from '@vercel/analytics/react';
 
 import { TRPCReactProvider } from '@/trpc/react';
 import Navbar from './_components/navbar/NavbarWrapper';
+import MessagePopup from './_components/ui/MessagePopup';
 
 export const metadata: Metadata = {
   title: 'Dungeoneer',
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               style={{ backgroundImage: "url('/bg.jpg')" }}
               className="min-h-screen bg-cover bg-fixed bg-center bg-no-repeat text-stone-800 dark:text-stone-200">
               <Navbar />
+              <MessagePopup />
               <main
                 role="main"
                 className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-50 via-stone-200/90 to-stone-800/40 px-4 pb-10 pt-20 dark:from-stone-950 dark:via-stone-900/95 dark:to-stone-900/60 xl:px-32">

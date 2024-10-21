@@ -11,10 +11,17 @@ import { useTheme } from 'next-themes';
 import { FaSun, FaMoon } from 'react-icons/fa6';
 
 import Button from '../ui/Button';
+import { useEffect, useState } from 'react';
 
 function ThemeButton() {
+  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
   return (
     <Button
       className="group"

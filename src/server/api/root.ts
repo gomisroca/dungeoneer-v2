@@ -1,4 +1,4 @@
-import { minionRouter } from '@/server/api/routers/minion';
+import { minionsRouter } from '@/server/api/routers/minions';
 import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc';
 
 /**
@@ -7,7 +7,7 @@ import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc';
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  minion: minionRouter,
+  minions: minionsRouter,
 });
 
 // export type definition of API
