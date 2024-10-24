@@ -21,7 +21,8 @@ function OrchestrionView({ orchestrion, session }: { orchestrion: ExpandedOrches
             alt={orchestrion.name}
             width={50}
             height={50}
-            className={twMerge('flex-shrink-0', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
+            unoptimized
+            className={twMerge('flex-shrink-0 rounded-xl', isOwnedByUser && 'opacity-75')} // Prevents the image from shrinking
           />
         )}
         {isOwnedByUser && (

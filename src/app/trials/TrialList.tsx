@@ -11,6 +11,8 @@ import MountSelector from '../_components/MountSelector';
 import OrchestrionSelector from '../_components/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
+import SpellSelector from '../_components/SpellSelector';
+import CardSelector from '../_components/CardSelector';
 
 function TrialCard({ trial, session }: { trial: ExpandedTrial; session: Session | null }) {
   const allOwned = checkOwnership(trial, session);
@@ -28,13 +30,22 @@ function TrialCard({ trial, session }: { trial: ExpandedTrial; session: Session 
         </div>
       )}
       {trial.image && (
-        <Image src={trial.image} alt={trial.name} width={300} height={100} className="w-full object-cover" />
+        <Image
+          unoptimized
+          src={trial.image}
+          alt={trial.name}
+          width={300}
+          height={100}
+          className="w-full object-cover"
+        />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{trial.name[0]?.toUpperCase() + trial.name.slice(1)}</h1>
       <div className="flex flex-col gap-2">
         {trial.minions.length > 0 && <MinionSelector minions={trial.minions} session={session} />}
         {trial.mounts.length > 0 && <MountSelector mounts={trial.mounts} session={session} />}
         {trial.orchestrions.length > 0 && <OrchestrionSelector orchestrions={trial.orchestrions} session={session} />}
+        {trial.spells.length > 0 && <SpellSelector spells={trial.spells} session={session} />}
+        {trial.cards.length > 0 && <CardSelector cards={trial.cards} session={session} />}
       </div>
     </div>
   );

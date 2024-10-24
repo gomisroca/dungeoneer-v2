@@ -11,6 +11,8 @@ import MountSelector from '../_components/MountSelector';
 import OrchestrionSelector from '../_components/OrchestrionSelector';
 import { twMerge } from 'tailwind-merge';
 import checkOwnership from '@/utils/checkOwnership';
+import SpellSelector from '../_components/SpellSelector';
+import CardSelector from '../_components/CardSelector';
 
 function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | null }) {
   const allOwned = checkOwnership(raid, session);
@@ -28,13 +30,15 @@ function RaidCard({ raid, session }: { raid: ExpandedRaid; session: Session | nu
         </div>
       )}
       {raid.image && (
-        <Image src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
+        <Image unoptimized src={raid.image} alt={raid.name} width={300} height={100} className="w-full object-cover" />
       )}
       <h1 className="line-clamp-2 text-center text-xl">{raid.name[0]?.toUpperCase() + raid.name.slice(1)}</h1>
       <div className="flex flex-col gap-2">
         {raid.minions.length > 0 && <MinionSelector minions={raid.minions} session={session} />}
         {raid.mounts.length > 0 && <MountSelector mounts={raid.mounts} session={session} />}
         {raid.orchestrions.length > 0 && <OrchestrionSelector orchestrions={raid.orchestrions} session={session} />}
+        {raid.spells.length > 0 && <SpellSelector spells={raid.spells} session={session} />}
+        {raid.cards.length > 0 && <CardSelector cards={raid.cards} session={session} />}
       </div>
     </div>
   );

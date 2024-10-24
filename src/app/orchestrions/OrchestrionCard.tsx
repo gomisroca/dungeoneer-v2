@@ -3,22 +3,22 @@
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
-import { type ExpandedMount } from 'types';
+import { type ExpandedOrchestrion } from 'types';
 import Source from '../_components/ui/Source';
-import { useMountLogic } from '@/hooks/useMountLogic';
 import { twMerge } from 'tailwind-merge';
 import { FaLock } from 'react-icons/fa6';
+import { useOrchestrionLogic } from '@/hooks/useOrchestrionLogic';
 
 function AddOrRemoveButton({
-  mount,
+  orchestrion,
   isOwnedByUser,
   session,
 }: {
-  mount: ExpandedMount;
+  orchestrion: ExpandedOrchestrion;
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, removeFromUser } = useMountLogic(mount);
+  const { addToUser, removeFromUser } = useOrchestrionLogic(orchestrion);
 
   return isOwnedByUser ? (
     <div className="flex flex-col items-start justify-start">
@@ -52,8 +52,14 @@ function AddOrRemoveButton({
   );
 }
 
-export default function Mountard({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
+export default function OrchestrionCard({
+  orchestrion,
+  session,
+}: {
+  orchestrion: ExpandedOrchestrion;
+  session: Session | null;
+}) {
+  const isOwnedByUser = orchestrion.owners.some((o) => o.id === session?.user.id);
 
   return (
     <div
@@ -68,16 +74,16 @@ export default function Mountard({ mount, session }: { mount: ExpandedMount; ses
           </span>
         </div>
       )}
-      {mount.image && (
-        <Image unoptimized src={mount.image} alt={mount.name} width={100} height={100} className="rounded-xl" />
+      {orchestrion.image && (
+        <Image src={orchestrion.image} alt={orchestrion.name} width={100} height={100} className="rounded-xl" />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{mount.name}</h1>
+      <h1 className="line-clamp-2 text-center text-xl">{orchestrion.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {mount.sources.map((source) => (
-          <Source key={mount.id} source={source} />
+        {orchestrion.sources.map((source) => (
+          <Source key={source.id} source={source} />
         ))}
       </div>
-      <AddOrRemoveButton mount={mount} isOwnedByUser={isOwnedByUser} session={session} />
+      <AddOrRemoveButton orchestrion={orchestrion} isOwnedByUser={isOwnedByUser} session={session} />
     </div>
   );
 }

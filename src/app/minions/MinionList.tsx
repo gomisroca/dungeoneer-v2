@@ -51,7 +51,7 @@ export default function MinionList({ session, initialMinions }: MinionListProps)
             </div>
           ))}
           {isFetchingNextPage && (
-            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-orange-300 p-4 text-center text-xl font-bold dark:bg-orange-700">
+            <h1 className="m-auto w-fit animate-pulse rounded-xl bg-cyan-300 p-4 text-center text-xl font-bold dark:bg-cyan-700">
               Loading more...
             </h1>
           )}

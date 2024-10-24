@@ -15,114 +15,121 @@ export const dungeonsRouter = createTRPCRouter({
       const limit = input.limit ?? 10;
       const { cursor } = input;
 
-      const dungeonsWithExtras = [];
-      let nextCursor = cursor;
+      const dungeons: Dungeon[] = await ctx.db.dungeon.findMany({
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+      });
 
-      // Loop to keep fetching dungeons until we fill up to the limit
-      while (dungeonsWithExtras.length < limit) {
-        // Fetch a batch of dungeons with pagination
-        const dungeons: Dungeon[] = await ctx.db.dungeon.findMany({
-          take: limit + 1, // Fetch limit + 1 to determine the next cursor
-          cursor: nextCursor ? { id: nextCursor } : undefined,
-        });
-
-        if (dungeons.length === 0) {
-          break; // No more dungeons to fetch
-        }
-
-        // Map over each dungeon to fetch associated minions and mounts
-        const expandedDungeons = await Promise.all(
-          dungeons.map(async (dungeon) => {
-            const minions = await ctx.db.minion.findMany({
-              where: {
-                sources: {
-                  some: {
-                    type: 'Dungeon',
-                    text: {
-                      contains: dungeon.name,
-                      mode: 'insensitive',
-                    },
+      // Map over each raid to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
+      const expandedDungeons = await Promise.all(
+        dungeons.map(async (dungeon) => {
+          const minions = await ctx.db.minion.findMany({
+            where: {
+              sources: {
+                some: {
+                  type: 'Dungeon',
+                  text: {
+                    contains: dungeon.name,
+                    mode: 'insensitive',
                   },
                 },
               },
-              include: {
-                sources: true,
-                owners: true,
-              },
-            });
-
-            const mounts = await ctx.db.mount.findMany({
-              where: {
-                sources: {
-                  some: {
-                    type: 'Dungeon',
-                    text: {
-                      contains: dungeon.name,
-                      mode: 'insensitive',
-                    },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
+          const mounts = await ctx.db.mount.findMany({
+            where: {
+              sources: {
+                some: {
+                  type: 'Dungeon',
+                  text: {
+                    contains: dungeon.name,
+                    mode: 'insensitive',
                   },
                 },
               },
-              include: {
-                sources: true,
-                owners: true,
-              },
-            });
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
 
-            const orchestrions = await ctx.db.orchestrion.findMany({
-              where: {
-                sources: {
-                  some: {
-                    text: {
-                      contains: dungeon.name,
-                      mode: 'insensitive',
-                    },
+          const orchestrions = await ctx.db.orchestrion.findMany({
+            where: {
+              sources: {
+                some: {
+                  type: 'Dungeon',
+                  text: {
+                    contains: dungeon.name,
+                    mode: 'insensitive',
                   },
                 },
               },
-              include: {
-                sources: true,
-                owners: true,
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
+
+          const spells = await ctx.db.spell.findMany({
+            where: {
+              sources: {
+                some: {
+                  text: {
+                    contains: dungeon.name,
+                    mode: 'insensitive',
+                  },
+                },
               },
-            });
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
 
-            // Only return dungeons that have either minions or mounts
-            if (minions.length > 0 || mounts.length > 0) {
-              return {
-                ...dungeon,
-                minions,
-                mounts,
-                orchestrions,
-              };
-            }
+          const cards = await ctx.db.card.findMany({
+            where: {
+              sources: {
+                some: {
+                  text: {
+                    contains: dungeon.name,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
 
-            return null; // Return null if no minions or mounts
-          })
-        );
+          return {
+            ...dungeon,
+            minions,
+            mounts,
+            orchestrions,
+            spells,
+            cards,
+          };
+        })
+      );
 
-        // Filter out null values (dungeons without minions or mounts)
-        const filteredDungeons = expandedDungeons.filter((dungeon) => dungeon !== null);
+      let nextCursor: typeof cursor | undefined = undefined;
 
-        // Add the filtered dungeons to the result set
-        dungeonsWithExtras.push(...filteredDungeons);
-
-        // Update nextCursor for pagination if needed
-        if (dungeons.length > limit) {
-          const nextDungeon = dungeons.pop(); // Remove the extra dungeon used for pagination
-          nextCursor = nextDungeon!.id; // Set nextCursor for the next batch
-        } else {
-          nextCursor = undefined; // No more dungeons to fetch
-        }
-
-        // Stop if we've exhausted all dungeons
-        if (!nextCursor) {
-          break;
-        }
+      if (dungeons.length > limit) {
+        const nextDungeon = dungeons.pop();
+        nextCursor = nextDungeon!.id;
       }
 
-      // Ensure we return no more than the requested limit
       return {
-        dungeons: dungeonsWithExtras.slice(0, limit), // Slice to the exact limit
+        dungeons: expandedDungeons.slice(0, limit),
         nextCursor,
       };
     }),

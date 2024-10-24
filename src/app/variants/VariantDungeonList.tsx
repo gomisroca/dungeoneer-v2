@@ -14,7 +14,7 @@ import checkOwnership from '@/utils/checkOwnership';
 import SpellSelector from '../_components/SpellSelector';
 import CardSelector from '../_components/CardSelector';
 
-function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
+function VariantDungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: Session | null }) {
   const allOwned = checkOwnership(dungeon, session);
   return (
     <div
@@ -53,13 +53,13 @@ function DungeonCard({ dungeon, session }: { dungeon: ExpandedDungeon; session: 
   );
 }
 
-type DungeonListOutput = RouterOutputs['dungeons']['getAll'];
-interface DungeonListProps {
-  initialDungeons: DungeonListOutput;
+type VariantDungeonListOutput = RouterOutputs['variants']['getAll'];
+interface VariantDungeonListProps {
+  initialDungeons: VariantDungeonListOutput;
   session: Session | null;
 }
-export default function DungeonList({ initialDungeons, session }: DungeonListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.dungeons.getAll.useInfiniteQuery(
+export default function VariantDungeonList({ initialDungeons, session }: VariantDungeonListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.variants.getAll.useInfiniteQuery(
     {
       limit: 20,
     },
@@ -92,7 +92,7 @@ export default function DungeonList({ initialDungeons, session }: DungeonListPro
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" key={i}>
               {page.dungeons.map((dungeon, index) => (
                 <div key={dungeon.id} ref={index === page.dungeons.length - 1 ? ref : undefined}>
-                  <DungeonCard dungeon={dungeon} session={session} />
+                  <VariantDungeonCard dungeon={dungeon} session={session} />
                 </div>
               ))}
             </div>

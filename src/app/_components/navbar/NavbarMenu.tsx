@@ -63,6 +63,15 @@ export default function NavbarMenu({ session }: NavbarMenuProps) {
             className="duration transition-200 object-fill ease-in-out group-hover:contrast-125"
           />
         </StyledLink>
+        <StyledLink href="/variants" className="group p-1">
+          <Image
+            src="/sources/V&C Dungeon.png"
+            alt="V&C Dungeon"
+            width={44}
+            height={44}
+            className="duration transition-200 object-fill ease-in-out group-hover:contrast-125"
+          />
+        </StyledLink>
         <button
           className="flex flex-row items-center justify-center gap-2 whitespace-nowrap text-nowrap rounded-xl p-4 font-semibold backdrop-blur-md transition duration-200 ease-in-out hover:bg-cyan-300 hover:text-stone-900 active:scale-x-110 active:bg-cyan-300 active:duration-100 dark:hover:bg-cyan-700 dark:hover:text-stone-100 dark:active:bg-cyan-700"
           onMouseEnter={() => setIsExpanded(true)}

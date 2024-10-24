@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
 import { type Trial } from '@prisma/client';
-
 export const trialsRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
@@ -57,6 +56,7 @@ export const trialsRouter = createTRPCRouter({
               owners: true,
             },
           });
+
           const orchestrions = await ctx.db.orchestrion.findMany({
             where: {
               sources: {
@@ -73,11 +73,48 @@ export const trialsRouter = createTRPCRouter({
               owners: true,
             },
           });
+
+          const spells = await ctx.db.spell.findMany({
+            where: {
+              sources: {
+                some: {
+                  text: {
+                    contains: trial.name,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
+
+          const cards = await ctx.db.card.findMany({
+            where: {
+              sources: {
+                some: {
+                  text: {
+                    contains: trial.name,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            },
+            include: {
+              sources: true,
+              owners: true,
+            },
+          });
+
           return {
             ...trial,
             minions,
             mounts,
             orchestrions,
+            spells,
+            cards,
           };
         })
       );

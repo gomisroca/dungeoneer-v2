@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { type Raid } from '@prisma/client';
+import { type VariantDungeon } from '@prisma/client';
 
-export const raidsRouter = createTRPCRouter({
+export const variantsRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
       z.object({
@@ -15,21 +15,21 @@ export const raidsRouter = createTRPCRouter({
       const limit = input.limit ?? 10;
       const { cursor } = input;
 
-      const raids: Raid[] = await ctx.db.raid.findMany({
+      const dungeons: VariantDungeon[] = await ctx.db.variantDungeon.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
       });
 
       // Map over each raid to fetch associated minions, mounts, orchestrions, spells, cards, hairstyles and emotes
-      const expandedRaids = await Promise.all(
-        raids.map(async (raid) => {
+      const expandedDungeons = await Promise.all(
+        dungeons.map(async (dungeon) => {
           const minions = await ctx.db.minion.findMany({
             where: {
               sources: {
                 some: {
-                  type: 'Raid',
+                  type: 'V&C Dungeon',
                   text: {
-                    contains: raid.name,
+                    contains: dungeon.name,
                     mode: 'insensitive',
                   },
                 },
@@ -44,9 +44,9 @@ export const raidsRouter = createTRPCRouter({
             where: {
               sources: {
                 some: {
-                  type: 'Raid',
+                  type: 'V&C Dungeon',
                   text: {
-                    contains: raid.name,
+                    contains: dungeon.name,
                     mode: 'insensitive',
                   },
                 },
@@ -62,9 +62,9 @@ export const raidsRouter = createTRPCRouter({
             where: {
               sources: {
                 some: {
-                  type: 'Raid',
+                  type: 'V&C Dungeon',
                   text: {
-                    contains: raid.name,
+                    contains: dungeon.name,
                     mode: 'insensitive',
                   },
                 },
@@ -81,7 +81,7 @@ export const raidsRouter = createTRPCRouter({
               sources: {
                 some: {
                   text: {
-                    contains: raid.name,
+                    contains: dungeon.name,
                     mode: 'insensitive',
                   },
                 },
@@ -98,7 +98,7 @@ export const raidsRouter = createTRPCRouter({
               sources: {
                 some: {
                   text: {
-                    contains: raid.name,
+                    contains: dungeon.name,
                     mode: 'insensitive',
                   },
                 },
@@ -111,7 +111,7 @@ export const raidsRouter = createTRPCRouter({
           });
 
           return {
-            ...raid,
+            ...dungeon,
             minions,
             mounts,
             orchestrions,
@@ -123,13 +123,13 @@ export const raidsRouter = createTRPCRouter({
 
       let nextCursor: typeof cursor | undefined = undefined;
 
-      if (raids.length > limit) {
-        const nextRaid = raids.pop();
-        nextCursor = nextRaid!.id;
+      if (dungeons.length > limit) {
+        const nextDungeon = dungeons.pop();
+        nextCursor = nextDungeon!.id;
       }
 
       return {
-        raids: expandedRaids.slice(0, limit),
+        dungeons: expandedDungeons.slice(0, limit),
         nextCursor,
       };
     }),
@@ -141,13 +141,13 @@ export const raidsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const raid = await ctx.db.raid.findUnique({
+      const dungeon = await ctx.db.variantDungeon.findUnique({
         where: {
           id: input.id,
         },
       });
 
-      if (!raid) {
+      if (!dungeon) {
         throw new TRPCError({ code: 'NOT_FOUND' });
       }
 
@@ -155,10 +155,10 @@ export const raidsRouter = createTRPCRouter({
         where: {
           sources: {
             some: {
-              type: 'Raid',
+              type: 'V&C Dungeon',
               text: {
-                endsWith: raid.name,
-                mode: 'insensitive',
+                contains: dungeon.name,
+                mode: 'insensitive', // Optional: to make the search case-insensitive
               },
             },
           },
@@ -173,9 +173,9 @@ export const raidsRouter = createTRPCRouter({
         where: {
           sources: {
             some: {
-              type: 'Raid',
+              type: 'V&C Dungeon',
               text: {
-                endsWith: raid.name,
+                contains: dungeon.name,
                 mode: 'insensitive',
               },
             },
@@ -192,7 +192,7 @@ export const raidsRouter = createTRPCRouter({
           sources: {
             some: {
               text: {
-                contains: raid.name,
+                contains: dungeon.name,
                 mode: 'insensitive',
               },
             },
@@ -204,6 +204,6 @@ export const raidsRouter = createTRPCRouter({
         },
       });
 
-      return { ...raid, minions, mounts, orchestrions };
+      return { ...dungeon, minions, mounts, orchestrions };
     }),
 });

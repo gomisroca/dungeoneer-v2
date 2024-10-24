@@ -68,7 +68,9 @@ export default function MinionCard({ minion, session }: { minion: ExpandedMinion
           </span>
         </div>
       )}
-      {minion.image && <Image src={minion.image} alt={minion.name} width={100} height={100} />}
+      {minion.image && (
+        <Image unoptimized src={minion.image} alt={minion.name} width={100} height={100} className="rounded-xl" />
+      )}
       <h1 className="line-clamp-2 text-center text-xl">{minion.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
         {minion.sources.map((source) => (

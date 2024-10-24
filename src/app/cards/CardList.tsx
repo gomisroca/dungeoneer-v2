@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import MountCard from './MountCard';
+import TTCard from './TTCard';
 
-type MountListOutput = RouterOutputs['mounts']['getAll'];
-interface MountListProps {
+type CardListOutput = RouterOutputs['cards']['getAll'];
+interface CardListProps {
   session: Session | null;
-  initialMounts: MountListOutput;
+  initialCards: CardListOutput;
 }
-export default function MountList({ session, initialMounts }: MountListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.mounts.getAll.useInfiniteQuery(
+export default function CardList({ session, initialCards }: CardListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.cards.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialMounts], pageParams: [undefined] },
+      initialData: { pages: [initialCards], pageParams: [undefined] },
     }
   );
 
@@ -38,14 +38,14 @@ export default function MountList({ session, initialMounts }: MountListProps) {
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
           {data?.pages.map((page, i) => (
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.mounts.map((mount, index) => (
-                <div key={mount.id} ref={index === page.mounts.length - 1 ? ref : undefined}>
-                  <MountCard mount={mount} session={session} />
+              {page.cards.map((card, index) => (
+                <div key={card.id} ref={index === page.cards.length - 1 ? ref : undefined}>
+                  <TTCard card={card} session={session} />
                 </div>
               ))}
             </div>

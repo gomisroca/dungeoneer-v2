@@ -151,8 +151,7 @@ model Spell {
   name        String
   description String
   patch       String
-  tradeable   Boolean
-  number      String
+  number      Int
   image       String?
   owned       String
   owners      User[]        @relation("SpellToUser")
@@ -182,8 +181,7 @@ model Card {
   name        String
   description String
   patch       String
-  tradeable   Boolean
-  stars       String
+  stars       Int
   number      String
   image       String?
   owned       String

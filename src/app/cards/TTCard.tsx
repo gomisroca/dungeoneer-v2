@@ -3,22 +3,22 @@
 import Image from 'next/image';
 import { type Session } from 'next-auth';
 import Button from '@/app/_components/ui/Button';
-import { type ExpandedMount } from 'types';
+import { type ExpandedCard } from 'types';
 import Source from '../_components/ui/Source';
-import { useMountLogic } from '@/hooks/useMountLogic';
 import { twMerge } from 'tailwind-merge';
 import { FaLock } from 'react-icons/fa6';
+import { useCardLogic } from '@/hooks/useCardLogic';
 
 function AddOrRemoveButton({
-  mount,
+  card,
   isOwnedByUser,
   session,
 }: {
-  mount: ExpandedMount;
+  card: ExpandedCard;
   isOwnedByUser: boolean;
   session: Session | null;
 }) {
-  const { addToUser, removeFromUser } = useMountLogic(mount);
+  const { addToUser, removeFromUser } = useCardLogic(card);
 
   return isOwnedByUser ? (
     <div className="flex flex-col items-start justify-start">
@@ -52,8 +52,8 @@ function AddOrRemoveButton({
   );
 }
 
-export default function Mountard({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
+export default function TTCard({ card, session }: { card: ExpandedCard; session: Session | null }) {
+  const isOwnedByUser = card.owners.some((o) => o.id === session?.user.id);
 
   return (
     <div
@@ -68,16 +68,16 @@ export default function Mountard({ mount, session }: { mount: ExpandedMount; ses
           </span>
         </div>
       )}
-      {mount.image && (
-        <Image unoptimized src={mount.image} alt={mount.name} width={100} height={100} className="rounded-xl" />
+      {card.image && (
+        <Image unoptimized src={card.image} alt={card.name} width={100} height={100} className="rounded-xl" />
       )}
-      <h1 className="line-clamp-2 text-center text-xl">{mount.name}</h1>
+      <h1 className="line-clamp-2 text-center text-xl">{card.name}</h1>
       <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 md:p-4">
-        {mount.sources.map((source) => (
-          <Source key={mount.id} source={source} />
+        {card.sources.map((source) => (
+          <Source key={source.id} source={source} />
         ))}
       </div>
-      <AddOrRemoveButton mount={mount} isOwnedByUser={isOwnedByUser} session={session} />
+      <AddOrRemoveButton card={card} isOwnedByUser={isOwnedByUser} session={session} />
     </div>
   );
 }

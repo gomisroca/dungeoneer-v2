@@ -2,23 +2,23 @@
 
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedMount } from 'types';
+import { type ExpandedCard } from 'types';
 import Button from './ui/Button';
 import { twMerge } from 'tailwind-merge';
-import { useMountLogic } from '@/hooks/useMountLogic';
 import { FaLock } from 'react-icons/fa6';
+import { useCardLogic } from '@/hooks/useCardLogic';
 
-function MountView({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const { addToUser, removeFromUser } = useMountLogic(mount);
-  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
+function CardView({ card, session }: { card: ExpandedCard; session: Session | null }) {
+  const { addToUser, removeFromUser } = useCardLogic(card);
+  const isOwnedByUser = session?.user.cards.some((m) => m.id === card.id);
 
   return (
     <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
       <div className="relative flex-shrink-0">
-        {mount.image && (
+        {card.image && (
           <Image
-            src={mount.image}
-            alt={mount.name}
+            src={card.image}
+            alt={card.name}
             width={50}
             height={50}
             unoptimized
@@ -39,7 +39,7 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
             'max-w-full flex-shrink overflow-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {mount.name}
+          {card.name}
         </p>
         {!session && (
           <div className="flex items-center justify-center gap-2">
@@ -52,14 +52,14 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
   );
 }
 
-function MountSelector({ mounts, session }: { mounts: ExpandedMount[]; session: Session | null }) {
+function CardSelector({ cards, session }: { cards: ExpandedCard[]; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {mounts.map((mount) => (
-        <MountView key={mount.id} mount={mount} session={session} />
+      {cards.map((card) => (
+        <CardView key={card.id} card={card} session={session} />
       ))}
     </div>
   );
 }
 
-export default MountSelector;
+export default CardSelector;

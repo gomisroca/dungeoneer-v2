@@ -2,23 +2,23 @@
 
 import { type Session } from 'next-auth';
 import Image from 'next/image';
-import { type ExpandedMount } from 'types';
+import { type ExpandedSpell } from 'types';
 import Button from './ui/Button';
 import { twMerge } from 'tailwind-merge';
-import { useMountLogic } from '@/hooks/useMountLogic';
 import { FaLock } from 'react-icons/fa6';
+import { useSpellLogic } from '@/hooks/useSpellLogic';
 
-function MountView({ mount, session }: { mount: ExpandedMount; session: Session | null }) {
-  const { addToUser, removeFromUser } = useMountLogic(mount);
-  const isOwnedByUser = mount.owners.some((o) => o.id === session?.user.id);
+function SpellView({ spell, session }: { spell: ExpandedSpell; session: Session | null }) {
+  const { addToUser, removeFromUser } = useSpellLogic(spell);
+  const isOwnedByUser = session?.user.spells.some((m) => m.id === spell.id);
 
   return (
     <Button onClick={isOwnedByUser ? removeFromUser : addToUser} disabled={!session} className="p-0">
       <div className="relative flex-shrink-0">
-        {mount.image && (
+        {spell.image && (
           <Image
-            src={mount.image}
-            alt={mount.name}
+            src={spell.image}
+            alt={spell.name}
             width={50}
             height={50}
             unoptimized
@@ -39,7 +39,7 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
             'max-w-full flex-shrink overflow-hidden text-ellipsis',
             isOwnedByUser && 'text-stone-500'
           )}>
-          {mount.name}
+          {spell.name}
         </p>
         {!session && (
           <div className="flex items-center justify-center gap-2">
@@ -52,14 +52,14 @@ function MountView({ mount, session }: { mount: ExpandedMount; session: Session 
   );
 }
 
-function MountSelector({ mounts, session }: { mounts: ExpandedMount[]; session: Session | null }) {
+function SpellSelector({ spells, session }: { spells: ExpandedSpell[]; session: Session | null }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {mounts.map((mount) => (
-        <MountView key={mount.id} mount={mount} session={session} />
+      {spells.map((spell) => (
+        <SpellView key={spell.id} spell={spell} session={session} />
       ))}
     </div>
   );
 }
 
-export default MountSelector;
+export default SpellSelector;

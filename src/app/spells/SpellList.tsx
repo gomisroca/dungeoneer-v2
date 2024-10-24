@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import MountCard from './MountCard';
+import SpellCard from './SpellCard';
 
-type MountListOutput = RouterOutputs['mounts']['getAll'];
-interface MountListProps {
+type SpellListOutput = RouterOutputs['spells']['getAll'];
+interface SpellListProps {
   session: Session | null;
-  initialMounts: MountListOutput;
+  initialSpells: SpellListOutput;
 }
-export default function MountList({ session, initialMounts }: MountListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.mounts.getAll.useInfiniteQuery(
+export default function SpellList({ session, initialSpells }: SpellListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.spells.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialMounts], pageParams: [undefined] },
+      initialData: { pages: [initialSpells], pageParams: [undefined] },
     }
   );
 
@@ -38,14 +38,14 @@ export default function MountList({ session, initialMounts }: MountListProps) {
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
           {data?.pages.map((page, i) => (
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.mounts.map((mount, index) => (
-                <div key={mount.id} ref={index === page.mounts.length - 1 ? ref : undefined}>
-                  <MountCard mount={mount} session={session} />
+              {page.spells.map((spell, index) => (
+                <div key={spell.id} ref={index === page.spells.length - 1 ? ref : undefined}>
+                  <SpellCard spell={spell} session={session} />
                 </div>
               ))}
             </div>

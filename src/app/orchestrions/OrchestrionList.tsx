@@ -4,21 +4,21 @@ import { useEffect } from 'react';
 import { useIntersection } from '@mantine/hooks';
 import { api, type RouterOutputs } from '@/trpc/react';
 import { type Session } from 'next-auth';
-import MountCard from './MountCard';
+import OrchestrionCard from './OrchestrionCard';
 
-type MountListOutput = RouterOutputs['mounts']['getAll'];
-interface MountListProps {
+type OrchestrionListOutput = RouterOutputs['orchestrions']['getAll'];
+interface OrchestrionListProps {
   session: Session | null;
-  initialMounts: MountListOutput;
+  initialOrchestrions: OrchestrionListOutput;
 }
-export default function MountList({ session, initialMounts }: MountListProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.mounts.getAll.useInfiniteQuery(
+export default function OrchestrionList({ session, initialOrchestrions }: OrchestrionListProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = api.orchestrions.getAll.useInfiniteQuery(
     {
       limit: 10,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialData: { pages: [initialMounts], pageParams: [undefined] },
+      initialData: { pages: [initialOrchestrions], pageParams: [undefined] },
     }
   );
 
@@ -38,14 +38,14 @@ export default function MountList({ session, initialMounts }: MountListProps) {
       {status === 'pending' ? (
         <h1 className="p-4 text-xl font-bold">Loading...</h1>
       ) : status === 'error' ? (
-        <h1 className="p-4 text-xl font-bold">Error fetching mounts</h1>
+        <h1 className="p-4 text-xl font-bold">Error fetching posts</h1>
       ) : (
         <>
           {data?.pages.map((page, i) => (
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5" key={i}>
-              {page.mounts.map((mount, index) => (
-                <div key={mount.id} ref={index === page.mounts.length - 1 ? ref : undefined}>
-                  <MountCard mount={mount} session={session} />
+              {page.orchestrions.map((orchestrion, index) => (
+                <div key={orchestrion.id} ref={index === page.orchestrions.length - 1 ? ref : undefined}>
+                  <OrchestrionCard orchestrion={orchestrion} session={session} />
                 </div>
               ))}
             </div>
